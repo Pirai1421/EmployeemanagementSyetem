@@ -12,7 +12,7 @@ public class EmployeeManagementSystem {
             System.out.println("\n1. Add Employee\n2. Update Employee\n3. Delete Employee\n4. View Employees\n5. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -118,7 +118,7 @@ public class EmployeeManagementSystem {
         employee.setEmailId(emailId);
         employee.setPhoneNum(phoneNum);
 
-        System.out.println("Employee updated successfully!");
+        System.out.println("Employee update successful");
     }
 
     private static void deleteEmployee(Scanner scanner) {
