@@ -68,9 +68,10 @@ public class Employee {
         if (salary >= 0) {
             this.salary = salary;
         }
+        else throw new IllegalArgumentException();
     }
     private String validateString(String field,String fieldname){
-        if(field == null || field.isEmpty() || !field.matches("[a-zA-z\\s]+")){
+        if(field == null || field.isEmpty() || !field.matches("[a-zA-z0-9\\s]+")){
             throw new IllegalArgumentException(fieldname+"enter valid character");
         }
         return field;
@@ -81,7 +82,7 @@ public class Employee {
         }
         return field;
     }
-    private String validatemail(String field,String fieldname){
+    private String validateEmail(String field,String fieldname){
         if(field == null || field.isEmpty() || !field.matches("^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$") || field.length()!=10){
             throw new IllegalArgumentException(fieldname+"enter valid num");
         }
@@ -93,6 +94,6 @@ public class Employee {
 
     }
     public void setEmailId(String emailId){
-        this.emailId=validateString(emailId,"email id");
+        this.emailId=emailId;
     }
 }
