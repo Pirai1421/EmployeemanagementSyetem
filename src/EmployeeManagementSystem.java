@@ -12,78 +12,85 @@ public class EmployeeManagementSystem {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         loadEmployeesFromDatabase();
-        while (true) {
-            System.out.println("\n1. Add Employee\n2. Update Employee\n3. Delete Employee\n4. View Employees\n5. Exit");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+        try {
+            while (true) {
+                System.out.println("\n1. Add Employee\n2. Update Employee\n3. Delete Employee\n4. View Employees\n5. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (choice) {
-                case 1:
-                    try {
-                        addEmployee(scanner);
+                switch (choice) {
+                    case 1:
+                        try {
+                            addEmployee(scanner);
+                            break;
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
+                    case 2:
+                        updateEmployee(scanner);
                         break;
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                case 2:
-                    updateEmployee(scanner);
-                    break;
-                case 3:
-                    deleteEmployee(scanner);
-                    break;
-                case 4:
-                    viewEmployees(scanner);
-                    break;
-                case 5:
-                    System.out.println("Exiting...");
-                    return;
-                default:
-                    System.out.println("Invalid choice! Please choose between 1 and 5.");
+                    case 3:
+                        deleteEmployee(scanner);
+                        break;
+                    case 4:
+                        viewEmployees(scanner);
+                        break;
+                    case 5:
+                        System.out.println("Exiting...");
+                        return;
+                    default:
+                        System.out.println("Invalid choice! Please choose between 1 and 5.");
+                }
             }
+
+        } catch (InputMismatchException e) {
+            System.out.println(e);
+            System.out.println("enter valued number from 1-5");
+            e.printStackTrace();
         }
     }
 
     private static void loadEmployeesFromDatabase() {
 
-            try {
-                Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                String sql = "SELECT e.id, e.name, e.designation, e.phone_number, e.salary, e.email, " +
-                        "a.street_number, a.street_name, a.city, a.state, a.country, " +
-                        "w.company_name, w.designation AS work_designation " +
-                        "FROM employees e " +
-                        "JOIN addresses a ON e.id = a.employee_id " +
-                        "JOIN work_experiences w ON e.id = w.employee_id";
-                PreparedStatement statement = connection.prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery();
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT e.id, e.name, e.designation, e.phone_number, e.salary, e.email, " +
+                    "a.street_number, a.street_name, a.city, a.state, a.country, " +
+                    "w.company_name, w.designation AS work_designation " +
+                    "FROM employees e " +
+                    "JOIN addresses a ON e.id = a.employee_id " +
+                    "JOIN work_experiences w ON e.id = w.employee_id";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
 
-                while (resultSet.next()) {
-                    int id = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
-                    String designation = resultSet.getString("designation");
-                    String phoneNum = resultSet.getString("phone_number");
-                    double salary = resultSet.getDouble("salary");
-                    String emailId = resultSet.getString("email");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String designation = resultSet.getString("designation");
+                String phoneNum = resultSet.getString("phone_number");
+                double salary = resultSet.getDouble("salary");
+                String emailId = resultSet.getString("email");
 
-                    String streetNumber = resultSet.getString("street_number");
-                    String streetName = resultSet.getString("street_name");
-                    String city = resultSet.getString("city");
-                    String state = resultSet.getString("state");
-                    String country = resultSet.getString("country");
-                    Address address = new Address(streetNumber, streetName, city, state, country);
+                String streetNumber = resultSet.getString("street_number");
+                String streetName = resultSet.getString("street_name");
+                String city = resultSet.getString("city");
+                String state = resultSet.getString("state");
+                String country = resultSet.getString("country");
+                Address address = new Address(streetNumber, streetName, city, state, country);
 
-                    String companyName = resultSet.getString("company_name");
-                    String workDesignation = resultSet.getString("work_designation");
-                    WorkExperience workExperience = new WorkExperience(companyName, workDesignation);
+                String companyName = resultSet.getString("company_name");
+                String workDesignation = resultSet.getString("work_designation");
+                WorkExperience workExperience = new WorkExperience(companyName, workDesignation);
 
-                    Employee employee = new Employee(id, name, designation, salary, address, workExperience, phoneNum, emailId);
-                    employees.add(employee);
-                }
-
-                connection.close();
-            } catch (SQLException e) {
-                System.out.println("Error loading employees from database: " + e.getMessage());
+                Employee employee = new Employee(id, name, designation, salary, address, workExperience, phoneNum, emailId);
+                employees.add(employee);
             }
+
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Error loading employees from database: " + e.getMessage());
+        }
 
     }
 
@@ -184,18 +191,19 @@ public class EmployeeManagementSystem {
         }
         return 101;
     }
-    private static int updateEmp(Employee e) throws SQLException{
-        Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        String sql="UPDATE EMPLOYEES SET NAME=?,DESIGNATION=?,PHONE_NUMBER=?,SALARY=?,EMAIL=? WHERE ID=?";
-        PreparedStatement statement= connection.prepareStatement(sql);
 
-        statement.setString(1,e.getName());
-        statement.setString(2,e.getDesignation());
+    private static int updateEmp(Employee e) throws SQLException {
+        Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        String sql = "UPDATE EMPLOYEES SET NAME=?,DESIGNATION=?,PHONE_NUMBER=?,SALARY=?,EMAIL=? WHERE ID=?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.setString(1, e.getName());
+        statement.setString(2, e.getDesignation());
         statement.setString(3, e.getPhoneNum());
-        statement.setDouble(4,e.getSalary());
-        statement.setString(5,e.getEmailId());
+        statement.setDouble(4, e.getSalary());
+        statement.setString(5, e.getEmailId());
         statement.setInt(6, e.getId());
-        int rs=statement.executeUpdate();
+        int rs = statement.executeUpdate();
         connection.close();
         return rs;
     }
@@ -221,79 +229,117 @@ public class EmployeeManagementSystem {
     }
 
 
-
-
-
-
-
     private static void deleteEmployee(Scanner scanner) {
         System.out.print("Enter Employee ID to delete: ");
         int id = scanner.nextInt();
+        scanner.nextLine();
 
-        Employee employee = findEmployeeById(id);
+        Employee employee;
+        try {
+            employee = getEmployeeById(id);
+        } catch (SQLException e) {
+            System.out.println("Error fetching employee from database: " + e.getMessage());
+            return;
+        }
+
         if (employee == null) {
             System.out.println("Employee not found!");
             return;
         }
 
-        employees.remove(employee);
-        System.out.println("Employee deleted successfully!");
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+
+            String deleteWorkExperienceSQL = "DELETE FROM work_experiences WHERE employee_id = ?";
+            PreparedStatement deleteWorkExperienceStmt = connection.prepareStatement(deleteWorkExperienceSQL);
+            deleteWorkExperienceStmt.setInt(1, id);
+            deleteWorkExperienceStmt.executeUpdate();
+
+
+            String deleteAddressSQL = "DELETE FROM addresses WHERE employee_id = ?";
+            PreparedStatement deleteAddressStmt = connection.prepareStatement(deleteAddressSQL);
+            deleteAddressStmt.setInt(1, id);
+            deleteAddressStmt.executeUpdate();
+
+
+            String deleteEmployeeSQL = "DELETE FROM employees WHERE id = ?";
+            PreparedStatement deleteEmployeeStmt = connection.prepareStatement(deleteEmployeeSQL);
+            deleteEmployeeStmt.setInt(1, id);
+            deleteEmployeeStmt.executeUpdate();
+
+            connection.close();
+            employees.remove(employee);
+            System.out.println("Employee deleted successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error deleting employee from database: " + e.getMessage());
+        }
     }
 
     private static void viewEmployees(Scanner s) {
         System.out.println("enter the employee id to view");
-        int idview=s.nextInt();
+        int idview = s.nextInt();
         s.nextLine();
         if (employees.isEmpty()) {
             System.out.println("No employees found.");
         } else {
-            System.out.println("\nEmployee List:");
+
             for (Employee employee : employees) {
-                if (employee.getId()==idview) {
+                if (employee.getId() == idview && employee.getName() != null) {
+                    System.out.println("\nEmployee List:");
                     System.out.println(employee);
+                } else if (employee.getId() == idview && employee.getName() == null) {
+                    System.out.println("Employee has been deleted");
                 }
             }
+
         }
     }
 
     private static Employee getEmployeeById(int id) throws SQLException {
-        Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        String sql = "SELECT e.id, e.name, e.designation, e.phone_number, e.salary, e.email, " +
-                "a.street_number, a.street_name, a.city, a.state, a.country, " +
-                "w.company_name, w.designation AS work_designation " +
-                "FROM employees e " +
-                "JOIN addresses a ON e.id = a.employee_id " +
-                "JOIN work_experiences w ON e.id = w.employee_id " +
-                "WHERE e.id = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setInt(1, id);
-        ResultSet resultSet = statement.executeQuery();
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT e.id, e.name, e.designation, e.phone_number, e.salary, e.email, " +
+                    "a.street_number, a.street_name, a.city, a.state, a.country, " +
+                    "w.company_name, w.designation AS work_designation " +
+                    "FROM employees e " +
+                    "JOIN addresses a ON e.id = a.employee_id " +
+                    "JOIN work_experiences w ON e.id = w.employee_id " +
+                    "WHERE e.id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
 
-        if (resultSet.next()) {
-            String name = resultSet.getString("name");
-            String designation = resultSet.getString("designation");
-            String phoneNum = resultSet.getString("phone_number");
-            double salary = resultSet.getDouble("salary");
-            String emailId = resultSet.getString("email");
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String designation = resultSet.getString("designation");
+                String phoneNum = resultSet.getString("phone_number");
+                double salary = resultSet.getDouble("salary");
+                String emailId = resultSet.getString("email");
 
-            String streetNumber = resultSet.getString("street_number");
-            String streetName = resultSet.getString("street_name");
-            String city = resultSet.getString("city");
-            String state = resultSet.getString("state");
-            String country = resultSet.getString("country");
-            Address address = new Address(streetNumber, streetName, city, state, country);
+                String streetNumber = resultSet.getString("street_number");
+                String streetName = resultSet.getString("street_name");
+                String city = resultSet.getString("city");
+                String state = resultSet.getString("state");
+                String country = resultSet.getString("country");
+                Address address = new Address(streetNumber, streetName, city, state, country);
 
-            String companyName = resultSet.getString("company_name");
-            String workDesignation = resultSet.getString("work_designation");
-            WorkExperience workExperience = new WorkExperience(companyName, workDesignation);
+                String companyName = resultSet.getString("company_name");
+                String workDesignation = resultSet.getString("work_designation");
+                WorkExperience workExperience = new WorkExperience(companyName, workDesignation);
 
-            Employee employee = new Employee(id, name, designation, salary, address, workExperience, phoneNum, emailId);
-            connection.close();
-            return employee;
-        } else {
-            connection.close();
-            return null;
+                Employee employee = new Employee(id, name, designation, salary, address, workExperience, phoneNum, emailId);
+                connection.close();
+                return employee;
+            } else {
+                connection.close();
+                return null;
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
+
+        return null;
     }
 
     private static void updateEmployee(Scanner scanner) {
@@ -346,16 +392,18 @@ public class EmployeeManagementSystem {
             }
         } catch (SQLException e) {
             System.out.println(e);
+            e.printStackTrace();
         }
         System.out.println("Employee update successful");
     }
-    private static Employee findEmployeeById(int id) {
-        for (Employee employee : employees) {
-            if (employee.getId() == id) {
-                return employee;
-            }
-        }
-        return null;
-    }
 }
+//    private static Employee findEmployeeById(int id) {
+//        for (Employee employee : employees) {
+//            if (employee.getId() == id) {
+//                return employee;
+//            }
+//        }
+//        return null;
+//    }
+//}
 /// new commit

@@ -83,7 +83,8 @@ public class Employee {
         return field;
     }
     private String validateEmail(String field,String fieldname){
-        if(field == null || field.isEmpty() || !field.matches("^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$") || field.length()!=10){
+        if(field == null || field.isEmpty() || !field.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$") || field.length()!=10){
             throw new IllegalArgumentException(fieldname+"enter valid num");
         }
         return field;
@@ -94,6 +95,6 @@ public class Employee {
 
     }
     public void setEmailId(String emailId){
-        this.emailId=emailId;
+        this.emailId=validateEmail(emailId,"mail id");
     }
 }
